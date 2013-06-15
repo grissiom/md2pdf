@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # get the path where this script is located in
 prog_dir=$(dirname $0)
