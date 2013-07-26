@@ -1,7 +1,13 @@
-\documentclass[fancyhdr, cap]{ctexbook}
+$if(usectex)$
+\documentclass[fancyhdr, cap, adobefonts]{ctexbook}
+\usepackage{amssymb,amsmath}
+$else$
+\documentclass[a4paper]{book}
+\usepackage{fancyhdr}
+\usepackage{xltxtra}
+$endif$
 %\usepackage[T1]{fontenc}
 \usepackage{lmodern}
-\usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \usepackage{fixltx2e} % provides \textsubscript
 
@@ -12,10 +18,15 @@
 \definecolor{colorsubsection}{RGB}{139,0,0} % DarkRed
 \definecolor{colorheader}{RGB}{70,130,180} % SteelBlue
 
+$if(usectex)$
 \CTEXsetup[format+={\color{colorchapter}}]{chapter}
 \CTEXsetup[aftername={\\}]{chapter}
 \CTEXsetup[format={\Large\bfseries\color{colorsection}}]{section}
 \CTEXsetup[format+={\color{colorsubsection}}]{subsection}
+$else$
+\setromanfont[Mapping=tex-text, BoldFont={WenQuanYi Zen Hei}]{AR PL SungtiL GB}
+\setmonofont{WenQuanYi Micro Hei Mono}
+$endif$
 
 % use microtype if available
 \IfFileExists{microtype.sty}{\usepackage{microtype}}{}
