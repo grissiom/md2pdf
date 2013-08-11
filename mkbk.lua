@@ -6,9 +6,6 @@ help = string.format(
 'Useage: %s output_file_name md_files', prog_dir..prog_name)
 table.remove(arg, 0)
 
-pandoc_opts = "--latex-engine xelatex --chapters --toc --number-sections -V usectex:1"
-pandoc_fmt  = "markdown+header_attributes+fenced_code_blocks"
-
 out_name = arg[1]
 if not out_name then
     print(help)
@@ -22,32 +19,63 @@ print('generating '..out_name..'.pdf')
 
 for i, name in ipairs{out_name..'.aux',
                       out_name..'.toc'} do
-    print('clean '..name)
+    if os.getenv('VERBOSE') then
+        print('clean '..name)
+    end
     os.remove(name)
 end
 
-exit_on_err = function (cmd)
+local verbose_log = function (str)
     if os.getenv('VERBOSE') then
-        print(cmd)
-    end
-    local st, reason, code = os.execute(cmd)
-    if not st then
-        print(string.format('-- error --\n"%s"\n-- %s with code %d --',
-                            cmd, reason, code))
-        os.exit(code)
+        print(str)
     end
 end
 
-if io.open('preface.md') then
-    local cmd = 'pandoc -f '..pandoc_fmt..' -o _preface.tex '..pandoc_opts..' preface.md'
-    exit_on_err(cmd)
-    table.insert(arg, 1, '-B _preface.tex')
+-- read the mds
+content = {md = {}, latex = {}}
+do
+    local pre = io.open('preface.md')
+    if pre then
+        content.md.preface = pre:read('*a')
+    end
 end
 
-cmd = 'pandoc --template '..prog_dir..'/default.latex -f '..pandoc_fmt..' -o '..
-      out_name..'.tex '..pandoc_opts..' '..table.concat(arg, ' ')
+content.md.body = ''
+do
+    for i, n in ipairs(arg) do
+        local bd, err = io.open(n)
+        if not bd then
+            print('error opening file: '..n)
+            print(err)
+            os.exit(-2)
+        end
+        content.md.body = content.md.body..bd:read('*a')
+    end
+end
 
-exit_on_err(cmd)
+-- define the engine
+local pass_seq = {'md', 'md2latex', 'latex', 'latex2pdf'}
+local passes = {md = {}, md2latex = {}, latex = {}, latex2pdf = {}}
+Pass = function (desc)
+    if not passes[desc.phase] then
+        print('warning: unkown phase '..desc.phase..', create one')
+        passes[desc.phase] = {}
+    end
+    verbose_log('insert '..desc.name..' to '..desc.phase)
+    table.insert(passes[desc.phase], desc)
+end
 
-exit_on_err('xelatex '..out_name..'.tex')
-exit_on_err('xelatex '..out_name..'.tex')
+-- gether the datas
+passes_dir = prog_dir..'passes/'
+
+--dofile(passes_dir..'test.lua')
+dofile(passes_dir..'trans.lua')
+
+for _, step in ipairs(pass_seq) do
+    print('do step '..step)
+    for _, p in ipairs(passes[step]) do
+        verbose_log('processing "'..p.part..'" with "'..p.name..'"')
+        content[p.nphase or p.phase][p.part] =
+              p.proc(content[p.pphase or p.phase][p.part])
+    end
+end
