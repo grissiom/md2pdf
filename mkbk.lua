@@ -51,6 +51,22 @@ do
     end
 end
 
+function file_exists(name)
+    local f = io.open(name, "r")
+    if f ~= nil then
+	io.close(f)
+	return true
+    else
+	return false
+    end
+end
+
+if file_exists('./default.latex') then
+    template_name = './default.latex'
+else
+    template_name = prog_dir..'/default.latex'
+end
+
 -- define the engine
 local pass_seq = {'md', 'md2latex', 'latex', 'latex2pdf'}
 local passes = {md = {}, md2latex = {}, latex = {}, latex2pdf = {}}

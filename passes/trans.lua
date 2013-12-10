@@ -1,8 +1,6 @@
 local pandoc_opts = "--latex-engine xelatex --chapters --toc --number-sections -V usectex:1"
 local pandoc_fmt  = "markdown+header_attributes+fenced_code_blocks+escaped_line_breaks"
 
-local cmd = 'pandoc -f '..pandoc_fmt..' -o _preface.tex '..pandoc_opts
-
 local proc_file = function (cmd, ofile)
     return function (str)
         if not str then
@@ -35,6 +33,8 @@ local proc_file = function (cmd, ofile)
     end
 end
 
+local cmd = 'pandoc -f '..pandoc_fmt..' -o _preface.tex '..pandoc_opts
+
 local proc_preface_md = proc_file(cmd, '_preface.tex')
 
 Pass{
@@ -46,7 +46,7 @@ Pass{
     nphase = 'latex',
 }
 
-cmd = 'pandoc --template '..prog_dir..'/default.latex'..' -f '..
+cmd = 'pandoc --template '..template_name..' -f '..
        pandoc_fmt..' -o _body.tex '..pandoc_opts..' -B _preface.tex'
 
 local proc_body_md = proc_file(cmd, '_body.tex')
