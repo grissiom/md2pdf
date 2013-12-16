@@ -11,6 +11,18 @@ Pass{
 }
 
 Pass{
+    name = 'add shade to Shaded env',
+    phase = 'latex',
+    part = 'body',
+    proc = function (input)
+	input = string.gsub(input,
+	                    '\\newenvironment{Shaded}{}{}',
+			    '\\newenvironment{Shaded}{\\begin{snugshade}}{\\end{snugshade}}')
+	return input
+    end
+}
+
+Pass{
     name = 'add latex figure label',
     phase = 'md',
     part = 'body',
