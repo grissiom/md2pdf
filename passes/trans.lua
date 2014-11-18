@@ -1,5 +1,4 @@
-local pandoc_opts = "--latex-engine xelatex --chapters --toc --number-sections -V usectex:1"
-local pandoc_fmt  = "markdown+header_attributes+fenced_code_blocks+escaped_line_breaks"
+local pandoc_fmt  = "markdown+header_attributes+fenced_code_blocks+escaped_line_breaks+ignore_line_breaks"
 
 local proc_file = function (cmd, ofile)
     return function (str)
