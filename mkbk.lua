@@ -4,7 +4,7 @@ prog_name = 'mkbk.lua'
 prog_dir  = string.gsub(arg[0], prog_name..'$', '')
 help = string.format('Useage: %s output_file_name md_files',
                      prog_dir..prog_name)
-table.remove(arg, 0)
+-- table.remove(arg, 0)
 
 if #arg < 2 then
     print(help)
